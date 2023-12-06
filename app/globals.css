@@ -26,6 +26,6 @@ body {
         rgb(var(--background-start-rgb));
 }
 
-h1 {
-    font-size: 200px;
+main {
+    font-family: cursive;
 }
