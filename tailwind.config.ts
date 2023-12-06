@@ -16,10 +16,11 @@ const config: Config = {
         },
         fontSize: {
             sm: "1.563rem",
-            base: "2.052rem",
+            base: "2.352rem",
             xl: "4.052rem",
+            mxl: "5.052rem",
         },
     },
-    plugins: [],
+    plugins: [require("@designbycode/tailwindcss-text-stroke")],
 };
 export default config;
