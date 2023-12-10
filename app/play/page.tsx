@@ -2,11 +2,18 @@
 
 import Matter from "matter-js";
 import { useRef, useEffect } from "react";
-import { lerprange } from "../utilities";
+import { clamp, lerprange } from "../utilities";
 import { Fruit, Wall } from "./types";
+import useEventListener from "../hooks/eventlistener";
 
 export default function Game() {
     const canvasref = useRef<HTMLCanvasElement>(null);
+
+    useEventListener("resize", () => {
+        const canvas = canvasref.current!;
+        canvas.width = canvas.getBoundingClientRect().width;
+        canvas.height = canvas.getBoundingClientRect().height;
+    });
 
     useEffect(() => {
         if (!canvasref.current) return;
@@ -42,10 +49,7 @@ export default function Game() {
 
             const radius = 30;
             const x_space = 2;
-            place_x = Math.max(
-                Math.min(canvas_x, canvas.width - radius - wall_thick - x_space),
-                radius + wall_thick + x_space
-            );
+            place_x = clamp(canvas_x, radius + wall_thick + x_space, canvas.width - radius - wall_thick - x_space);
             place_y = drop_ratio * canvas.height;
             place_radius = radius;
         });
@@ -55,9 +59,10 @@ export default function Game() {
             const radius = Math.random() * 30 + 10;
 
             const canvas_x = ((e.clientX - rect.left) / (rect.right - rect.left)) * canvas.width;
-            const matter_x = Math.max(
-                Math.min((canvas_x / canvas.width) * matter_width, matter_width - radius - wall_thick - x_space),
-                radius + wall_thick + x_space
+            const matter_x = clamp(
+                (canvas_x / canvas.width) * matter_width,
+                radius + wall_thick + x_space,
+                matter_width - radius - wall_thick - x_space
             );
             const matter_y = drop_ratio * matter_height;
 
@@ -106,9 +111,11 @@ export default function Game() {
                 );
                 ctx.fill();
             }
+
             ctx.beginPath();
             ctx.arc(place_x, place_y, place_radius, 0, 2 * Math.PI);
             ctx.fill();
+
             reqid = window.requestAnimationFrame(draw);
             Matter.Engine.update(engine, elapsed);
         }
@@ -117,19 +124,6 @@ export default function Game() {
             cancelAnimationFrame(reqid);
         };
     }, []);
-
-    useEffect(() => {
-        function resizeEvent() {
-            const canvas = canvasref.current!;
-            canvas.width = canvas.getBoundingClientRect().width;
-            canvas.height = canvas.getBoundingClientRect().height;
-        }
-        resizeEvent();
-        addEventListener("resize", resizeEvent);
-        return () => {
-            removeEventListener("resize", resizeEvent);
-        };
-    });
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between bg-amber-100">
