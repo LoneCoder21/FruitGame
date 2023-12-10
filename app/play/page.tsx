@@ -2,7 +2,7 @@
 
 import Matter from "matter-js";
 import { useRef, useEffect } from "react";
-import { clamp, lerprange } from "../utilities";
+import { clamp } from "../utilities";
 import { Fruit, Wall } from "./types";
 import useEventListener from "../hooks/eventlistener";
 
@@ -44,23 +44,21 @@ export default function Game() {
         });
 
         canvas.addEventListener("mousemove", (e) => {
-            var rect = canvas.getBoundingClientRect();
-            const canvas_x = ((e.clientX - rect.left) / (rect.right - rect.left)) * canvas.width;
+            const matter_x = (e.offsetX / canvas.width) * matter_width;
 
             const radius = 30;
             const x_space = 2;
-            place_x = clamp(canvas_x, radius + wall_thick + x_space, canvas.width - radius - wall_thick - x_space);
-            place_y = drop_ratio * canvas.height;
+
+            place_x = clamp(matter_x, 0 + wall_thick + radius + x_space, matter_width - radius - wall_thick - x_space);
+            place_y = drop_ratio * matter_height;
             place_radius = radius;
         });
 
         canvas.addEventListener("mousedown", function (e) {
-            var rect = canvas.getBoundingClientRect();
-            const radius = Math.random() * 30 + 10;
+            const radius = 30;
 
-            const canvas_x = ((e.clientX - rect.left) / (rect.right - rect.left)) * canvas.width;
             const matter_x = clamp(
-                (canvas_x / canvas.width) * matter_width,
+                (e.offsetX / canvas.width) * matter_width,
                 radius + wall_thick + x_space,
                 matter_width - radius - wall_thick - x_space
             );
@@ -80,35 +78,27 @@ export default function Game() {
             const elapsed = now - lasttime;
             lasttime = now;
 
-            //update physics
+            // update physics
             for (let fruit of fruits.values()) {
                 fruit.update();
             }
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.reset();
+
+            ctx.scale(canvas.width / matter_width, canvas.height / matter_height);
 
             ctx.fillStyle = "white";
-            ctx.fillRect(place_x - wall_thick / 2, place_y, wall_thick, canvas.height);
+            ctx.fillRect(place_x - wall_thick / 2, place_y, wall_thick, matter_height);
 
             ctx.fillStyle = "red";
+
             for (let wall of walls) {
-                ctx.fillRect(
-                    lerprange(wall.x, 0, matter_width, 0, canvas.width),
-                    lerprange(wall.y, 0, matter_height, 0, canvas.height),
-                    lerprange(wall.width, 0, matter_width, 0, canvas.width),
-                    lerprange(wall.height, 0, matter_height, 0, canvas.height)
-                );
+                ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
             }
 
             for (let circle of fruits.values()) {
                 ctx.beginPath();
-                ctx.arc(
-                    lerprange(circle.x, 0, matter_width, 0, canvas.width),
-                    lerprange(circle.y, 0, matter_height, 0, canvas.height),
-                    lerprange(circle.radius, 0, matter_width, 0, canvas.width),
-                    0,
-                    2 * Math.PI
-                );
+                ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
                 ctx.fill();
             }
 
