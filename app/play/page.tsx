@@ -39,13 +39,12 @@ export default function Game() {
         let fruits = new Map<number, Fruit>();
 
         let fruitTypes = [
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "red", "cherry", 1),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 25, "pink", "strawberry", 2),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "purple", "grape", 4),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 35, "orange", "orange", 8),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "crimson", "apple", 16),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 45, "yellow", "pear", 64),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 50, "hotpink", "peach", 128),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "red", "cherry", 2),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 25, "pink", "strawberry", 4),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "purple", "grape", 8),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 35, "orange", "orange", 16),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "crimson", "apple", 32),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 45, "yellow", "pear", 128),
             new Fruit(matter_width / 2, drop_ratio * matter_height, 55, "darkorange", "pineapple", 256),
             new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 512),
             new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 1024)
@@ -122,7 +121,6 @@ export default function Game() {
                     );
                     nextfruit.setPosition(fruit_x, newposition.y);
                     current_score += nextfruit.score;
-                    console.log(current_score);
                 }
             });
         });
