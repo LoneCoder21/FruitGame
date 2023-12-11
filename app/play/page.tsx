@@ -65,11 +65,19 @@ export default function Game() {
         });
 
         canvas.addEventListener("mousedown", function (e) {
+            const matter_x = (e.offsetX / canvas.width) * matter_width;
+
             let sendfruit = currentfruit;
             fruits.set(sendfruit.getBody().id, sendfruit);
             Matter.Composite.add(engine.world, [sendfruit.getBody()]);
             currentfruit = fruittypes[Math.floor(Math.random() * fruittypes.length)].createClone();
-            currentfruit.setPosition(sendfruit.x, sendfruit.y);
+            let radius = currentfruit.radius;
+            let fruit_x = clamp(
+                matter_x,
+                wall_thick + radius + x_space,
+                matter_width - radius - wall_thick - x_space
+            );
+            currentfruit.setPosition(fruit_x, sendfruit.y);
         });
 
         let reqid = window.requestAnimationFrame(draw);
