@@ -36,15 +36,21 @@ export default function Game() {
         ];
         let fruits = new Map<number, Fruit>();
 
-        let fruittypes = [
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 10, "blue"),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 15, "red"),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "green"),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "pink"),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "orange")
+        let fruitTypes = [
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 10, "blue", "grape"),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 15, "red", "strawberry"),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "green", "pear"),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "pink", "melon"),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "orange", "pumpkin")
         ];
-
-        let currentfruit = fruittypes[Math.floor(Math.random() * fruittypes.length)].createClone();
+        let fruitIndex = new Map<string, number>([
+            ["grape", 0],
+            ["strawberry", 1],
+            ["pear", 2],
+            ["melon", 3],
+            ["pumpkin", 4]
+        ]);
+        let currentfruit = fruitTypes[Math.floor(Math.random() * fruitTypes.length)].clone();
 
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
@@ -67,17 +73,40 @@ export default function Game() {
         canvas.addEventListener("mousedown", function (e) {
             const matter_x = (e.offsetX / canvas.width) * matter_width;
 
-            let sendfruit = currentfruit;
-            fruits.set(sendfruit.getBody().id, sendfruit);
-            Matter.Composite.add(engine.world, [sendfruit.getBody()]);
-            currentfruit = fruittypes[Math.floor(Math.random() * fruittypes.length)].createClone();
+            fruits.set(currentfruit.getBody().id, currentfruit);
+            Matter.Composite.add(engine.world, [currentfruit.getBody()]);
+            currentfruit = fruitTypes[Math.floor(Math.random() * fruitTypes.length)].clone();
             let radius = currentfruit.radius;
-            let fruit_x = clamp(
-                matter_x,
-                wall_thick + radius + x_space,
-                matter_width - radius - wall_thick - x_space
-            );
-            currentfruit.setPosition(fruit_x, sendfruit.y);
+            let fruit_x = clamp(matter_x, wall_thick + radius + x_space, matter_width - radius - wall_thick - x_space);
+            currentfruit.setPosition(fruit_x, currentfruit.y);
+        });
+
+        Matter.Events.on(engine, "collisionStart", (e) => {
+            e.pairs.forEach((b) => {
+                let fruit1 = fruits.get(b.bodyA.id);
+                let fruit2 = fruits.get(b.bodyB.id);
+                if (fruit1 && fruit2 && fruit1.name === fruit2.name) {
+                    console.log(fruit1, fruit2);
+                    Matter.World.remove(engine.world, b.bodyA);
+                    Matter.World.remove(engine.world, b.bodyB);
+                    fruits.delete(b.bodyA.id);
+                    fruits.delete(b.bodyB.id);
+
+                    let newposition = Matter.Vector.div(Matter.Vector.add(b.bodyA.position, b.bodyB.position), 2);
+                    let nextfruitIndex = (fruitIndex.get(fruit1.name)! + 1) % fruitTypes.length;
+                    let nextfruit = fruitTypes[nextfruitIndex].clone();
+
+                    fruits.set(nextfruit.getBody().id, nextfruit);
+                    Matter.Composite.add(engine.world, [nextfruit.getBody()]);
+                    let radius = nextfruit.radius;
+                    let fruit_x = clamp(
+                        newposition.x,
+                        wall_thick + radius + x_space,
+                        matter_width - radius - wall_thick - x_space
+                    );
+                    nextfruit.setPosition(fruit_x, newposition.y);
+                }
+            });
         });
 
         let reqid = window.requestAnimationFrame(draw);
@@ -100,7 +129,7 @@ export default function Game() {
             ctx.fillStyle = "white";
             ctx.fillRect(currentfruit.x - place_highlight / 2, currentfruit.y, place_highlight, matter_height);
 
-            ctx.fillStyle = "red";
+            ctx.fillStyle = "brown";
 
             for (let wall of walls) {
                 ctx.fillRect(wall.x, wall.y, wall.width, wall.height);

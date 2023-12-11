@@ -5,18 +5,20 @@ export class Fruit {
     y: number;
     radius: number;
     color: string;
+    name: string;
     body: Matter.Body;
 
-    constructor(x: number, y: number, radius: number, color: string) {
+    constructor(x: number, y: number, radius: number, color: string, name: string) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
-        this.body = Matter.Bodies.circle(x, y, radius);
+        this.name = name;
+        this.body = Matter.Bodies.circle(x, y, radius, { restitution: 0.2 });
     }
 
-    createClone() {
-        return new Fruit(this.x, this.y, this.radius, this.color);
+    clone() {
+        return new Fruit(this.x, this.y, this.radius, this.color, this.name);
     }
 
     update() {
