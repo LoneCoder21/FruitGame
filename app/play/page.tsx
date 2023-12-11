@@ -27,6 +27,8 @@ export default function Game() {
         const drop_ratio = 0.1;
         const x_space = 2;
 
+        let current_score = 0;
+
         let engine = Matter.Engine.create({ gravity: { scale: 0.001 } });
 
         let walls = [
@@ -37,20 +39,31 @@ export default function Game() {
         let fruits = new Map<number, Fruit>();
 
         let fruitTypes = [
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 10, "blue", "grape"),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 15, "red", "strawberry"),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "green", "pear"),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "pink", "melon"),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "orange", "pumpkin")
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "red", "cherry", 1),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 25, "pink", "strawberry", 2),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "purple", "grape", 4),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 35, "orange", "orange", 8),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "crimson", "apple", 16),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 45, "yellow", "pear", 64),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 50, "hotpink", "peach", 128),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 55, "darkorange", "pineapple", 256),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 512),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 1024)
         ];
+        const maxfruitspawn = 5;
         let fruitIndex = new Map<string, number>([
-            ["grape", 0],
+            ["cherry", 0],
             ["strawberry", 1],
-            ["pear", 2],
-            ["melon", 3],
-            ["pumpkin", 4]
+            ["grape", 2],
+            ["orange", 3],
+            ["apple", 4],
+            ["pear", 5],
+            ["peach", 6],
+            ["pineapple", 7],
+            ["melon", 8],
+            ["watermelon", 9]
         ]);
-        let currentfruit = fruitTypes[Math.floor(Math.random() * fruitTypes.length)].clone();
+        let currentfruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
 
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
@@ -71,11 +84,14 @@ export default function Game() {
         });
 
         canvas.addEventListener("mousedown", function (e) {
+            if ((e.buttons & 1) !== 1) {
+                return;
+            }
             const matter_x = (e.offsetX / canvas.width) * matter_width;
 
             fruits.set(currentfruit.getBody().id, currentfruit);
             Matter.Composite.add(engine.world, [currentfruit.getBody()]);
-            currentfruit = fruitTypes[Math.floor(Math.random() * fruitTypes.length)].clone();
+            currentfruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
             let radius = currentfruit.radius;
             let fruit_x = clamp(matter_x, wall_thick + radius + x_space, matter_width - radius - wall_thick - x_space);
             currentfruit.setPosition(fruit_x, currentfruit.y);
@@ -105,6 +121,8 @@ export default function Game() {
                         matter_width - radius - wall_thick - x_space
                     );
                     nextfruit.setPosition(fruit_x, newposition.y);
+                    current_score += nextfruit.score;
+                    console.log(current_score);
                 }
             });
         });

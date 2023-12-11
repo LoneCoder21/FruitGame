@@ -6,19 +6,21 @@ export class Fruit {
     radius: number;
     color: string;
     name: string;
+    score: number;
     body: Matter.Body;
 
-    constructor(x: number, y: number, radius: number, color: string, name: string) {
+    constructor(x: number, y: number, radius: number, color: string, name: string, score: number) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
         this.name = name;
-        this.body = Matter.Bodies.circle(x, y, radius, { restitution: 0.2 });
+        this.score = score;
+        this.body = Matter.Bodies.circle(x, y, radius, { restitution: 0.1 });
     }
 
     clone() {
-        return new Fruit(this.x, this.y, this.radius, this.color, this.name);
+        return new Fruit(this.x, this.y, this.radius, this.color, this.name, this.score);
     }
 
     update() {
