@@ -32,8 +32,9 @@ export default function Game() {
         let engine = Matter.Engine.create({ gravity: { scale: 0.001 } });
 
         let walls = [
-            new Wall(0, 0, wall_thick, matter_height),
-            new Wall(matter_width - wall_thick, 0, wall_thick, matter_height),
+            new Wall(0, 0.2 * matter_height, wall_thick, matter_height),
+            new Wall(matter_width - wall_thick, 0.2 * matter_height, wall_thick, matter_height),
+
             new Wall(0, matter_height - wall_thick, matter_width, wall_thick)
         ];
         let fruits = new Map<number, Fruit>();
@@ -67,6 +68,9 @@ export default function Game() {
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
         });
+
+        let wallimage = new Image();
+        wallimage.src = "wall.png";
 
         canvas.addEventListener("mousemove", (e) => {
             const matter_x = (e.offsetX / canvas.width) * matter_width;
@@ -144,10 +148,8 @@ export default function Game() {
             ctx.fillStyle = "white";
             ctx.fillRect(currentfruit.x - place_highlight / 2, currentfruit.y, place_highlight, matter_height);
 
-            ctx.fillStyle = "brown";
-
-            for (let wall of walls) {
-                ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+            if (wallimage.complete) {
+                ctx.drawImage(wallimage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height);
             }
 
             for (let fruit of fruits.values()) {
@@ -167,10 +169,20 @@ export default function Game() {
                 }
             }
 
-            ctx.fillStyle = currentfruit.color;
-            ctx.beginPath();
-            ctx.arc(currentfruit.x, currentfruit.y, currentfruit.radius, 0, 2 * Math.PI);
-            ctx.fill();
+            if (currentfruit.image.complete) {
+                const transform = ctx.getTransform();
+                ctx.translate(currentfruit.x, currentfruit.y);
+                ctx.rotate(-currentfruit.angle);
+                ctx.translate(-currentfruit.x, -currentfruit.y);
+                ctx.drawImage(
+                    currentfruit.image,
+                    currentfruit.x - currentfruit.radius,
+                    currentfruit.y - currentfruit.radius,
+                    currentfruit.radius * 2,
+                    currentfruit.radius * 2
+                );
+                ctx.setTransform(transform);
+            }
 
             reqid = window.requestAnimationFrame(draw);
             Matter.Engine.update(engine, elapsed);
