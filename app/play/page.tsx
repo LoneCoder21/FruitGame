@@ -26,6 +26,7 @@ export default function Game() {
         const place_highlight = 5;
         const drop_ratio = 0.1;
         const x_space = 2;
+        const spawnwindow = 500;
 
         let current_score = 0;
 
@@ -64,6 +65,7 @@ export default function Game() {
             ["watermelon", 9]
         ]);
         let currentfruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
+        let spawnable = true;
 
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
@@ -87,7 +89,7 @@ export default function Game() {
         });
 
         canvas.addEventListener("mousedown", function (e) {
-            if ((e.buttons & 1) !== 1) {
+            if ((e.buttons & 1) !== 1 || !spawnable) {
                 return;
             }
             const matter_x = (e.offsetX / canvas.width) * matter_width;
@@ -98,6 +100,10 @@ export default function Game() {
             let radius = currentfruit.radius;
             let fruit_x = clamp(matter_x, wall_thick + radius + x_space, matter_width - radius - wall_thick - x_space);
             currentfruit.setPosition(fruit_x, currentfruit.y);
+            spawnable = false;
+            setTimeout(() => {
+                spawnable = true;
+            }, spawnwindow);
         });
 
         Matter.Events.on(engine, "collisionStart", (e) => {
@@ -146,7 +152,8 @@ export default function Game() {
             ctx.scale(canvas.width / matter_width, canvas.height / matter_height);
 
             ctx.fillStyle = "white";
-            ctx.fillRect(currentfruit.x - place_highlight / 2, currentfruit.y, place_highlight, matter_height);
+            if (spawnable)
+                ctx.fillRect(currentfruit.x - place_highlight / 2, currentfruit.y, place_highlight, matter_height);
 
             if (wallimage.complete) {
                 ctx.drawImage(wallimage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height);
@@ -169,7 +176,7 @@ export default function Game() {
                 }
             }
 
-            if (currentfruit.image.complete) {
+            if (currentfruit.image.complete && spawnable) {
                 const transform = ctx.getTransform();
                 ctx.translate(currentfruit.x, currentfruit.y);
                 ctx.rotate(-currentfruit.angle);
