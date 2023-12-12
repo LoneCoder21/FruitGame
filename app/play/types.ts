@@ -4,9 +4,11 @@ export class Fruit {
     x: number;
     y: number;
     radius: number;
+    angle: number;
     color: string;
     name: string;
     score: number;
+    image: HTMLImageElement;
     body: Matter.Body;
 
     constructor(x: number, y: number, radius: number, color: string, name: string, score: number) {
@@ -16,7 +18,10 @@ export class Fruit {
         this.color = color;
         this.name = name;
         this.score = score;
-        this.body = Matter.Bodies.circle(x, y, radius, { restitution: 0.1 });
+        this.image = new Image();
+        this.image.src = `/${name}.png`;
+        this.body = Matter.Bodies.circle(x, y, radius, { restitution: 0.1, angularSpeed: 1.0 });
+        this.angle = this.body.angle;
     }
 
     clone() {
@@ -26,6 +31,7 @@ export class Fruit {
     update() {
         this.x = this.body.position.x;
         this.y = this.body.position.y;
+        this.angle = this.body.angle;
     }
 
     setPosition(x: number, y: number) {

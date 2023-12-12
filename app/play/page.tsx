@@ -32,24 +32,25 @@ export default function Game() {
         let engine = Matter.Engine.create({ gravity: { scale: 0.001 } });
 
         let walls = [
-            new Wall(0, 0, wall_thick, matter_height),
-            new Wall(matter_width - wall_thick, 0, wall_thick, matter_height),
+            new Wall(0, 0.2 * matter_height, wall_thick, matter_height),
+            new Wall(matter_width - wall_thick, 0.2 * matter_height, wall_thick, matter_height),
+
             new Wall(0, matter_height - wall_thick, matter_width, wall_thick)
         ];
         let fruits = new Map<number, Fruit>();
 
         let fruitTypes = [
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "red", "cherry", 2),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 25, "pink", "strawberry", 4),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "purple", "grape", 8),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 35, "orange", "orange", 16),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "crimson", "apple", 32),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 45, "yellow", "pear", 128),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 55, "darkorange", "pineapple", 256),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 512),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 1024)
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "red", "cherry", 1),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 25, "pink", "strawberry", 2),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "purple", "grape", 4),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 35, "orange", "orange", 8),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "crimson", "apple", 16),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 45, "yellow", "pear", 64),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 55, "darkorange", "pineapple", 128),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 256),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 512)
         ];
-        const maxfruitspawn = 5;
+        const maxfruitspawn = fruitTypes.length;
         let fruitIndex = new Map<string, number>([
             ["cherry", 0],
             ["strawberry", 1],
@@ -67,6 +68,9 @@ export default function Game() {
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
         });
+
+        let wallimage = new Image();
+        wallimage.src = "wall.png";
 
         canvas.addEventListener("mousemove", (e) => {
             const matter_x = (e.offsetX / canvas.width) * matter_width;
@@ -101,7 +105,6 @@ export default function Game() {
                 let fruit1 = fruits.get(b.bodyA.id);
                 let fruit2 = fruits.get(b.bodyB.id);
                 if (fruit1 && fruit2 && fruit1.name === fruit2.name) {
-                    console.log(fruit1, fruit2);
                     Matter.World.remove(engine.world, b.bodyA);
                     Matter.World.remove(engine.world, b.bodyB);
                     fruits.delete(b.bodyA.id);
@@ -145,23 +148,41 @@ export default function Game() {
             ctx.fillStyle = "white";
             ctx.fillRect(currentfruit.x - place_highlight / 2, currentfruit.y, place_highlight, matter_height);
 
-            ctx.fillStyle = "brown";
-
-            for (let wall of walls) {
-                ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+            if (wallimage.complete) {
+                ctx.drawImage(wallimage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height);
             }
 
             for (let fruit of fruits.values()) {
-                ctx.fillStyle = fruit.color;
-                ctx.beginPath();
-                ctx.arc(fruit.x, fruit.y, fruit.radius, 0, 2 * Math.PI);
-                ctx.fill();
+                if (fruit.image.complete) {
+                    const transform = ctx.getTransform();
+                    ctx.translate(fruit.x, fruit.y);
+                    ctx.rotate(-fruit.angle);
+                    ctx.translate(-fruit.x, -fruit.y);
+                    ctx.drawImage(
+                        fruit.image,
+                        fruit.x - fruit.radius,
+                        fruit.y - fruit.radius,
+                        fruit.radius * 2,
+                        fruit.radius * 2
+                    );
+                    ctx.setTransform(transform);
+                }
             }
 
-            ctx.fillStyle = currentfruit.color;
-            ctx.beginPath();
-            ctx.arc(currentfruit.x, currentfruit.y, currentfruit.radius, 0, 2 * Math.PI);
-            ctx.fill();
+            if (currentfruit.image.complete) {
+                const transform = ctx.getTransform();
+                ctx.translate(currentfruit.x, currentfruit.y);
+                ctx.rotate(-currentfruit.angle);
+                ctx.translate(-currentfruit.x, -currentfruit.y);
+                ctx.drawImage(
+                    currentfruit.image,
+                    currentfruit.x - currentfruit.radius,
+                    currentfruit.y - currentfruit.radius,
+                    currentfruit.radius * 2,
+                    currentfruit.radius * 2
+                );
+                ctx.setTransform(transform);
+            }
 
             reqid = window.requestAnimationFrame(draw);
             Matter.Engine.update(engine, elapsed);
