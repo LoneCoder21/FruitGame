@@ -45,12 +45,11 @@ export default function Game() {
             new Fruit(matter_width / 2, drop_ratio * matter_height, 35, "orange", "orange", 8),
             new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "crimson", "apple", 16),
             new Fruit(matter_width / 2, drop_ratio * matter_height, 45, "yellow", "pear", 64),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 50, "hotpink", "peach", 128),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 55, "darkorange", "pineapple", 256),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 512),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 1024)
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 55, "darkorange", "pineapple", 128),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 256),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 512)
         ];
-        const maxfruitspawn = 5;
+        const maxfruitspawn = fruitTypes.length;
         let fruitIndex = new Map<string, number>([
             ["cherry", 0],
             ["strawberry", 1],
@@ -102,7 +101,6 @@ export default function Game() {
                 let fruit1 = fruits.get(b.bodyA.id);
                 let fruit2 = fruits.get(b.bodyB.id);
                 if (fruit1 && fruit2 && fruit1.name === fruit2.name) {
-                    console.log(fruit1, fruit2);
                     Matter.World.remove(engine.world, b.bodyA);
                     Matter.World.remove(engine.world, b.bodyB);
                     fruits.delete(b.bodyA.id);
@@ -122,7 +120,6 @@ export default function Game() {
                     );
                     nextfruit.setPosition(fruit_x, newposition.y);
                     current_score += nextfruit.score;
-                    console.log(current_score);
                 }
             });
         });
@@ -154,10 +151,20 @@ export default function Game() {
             }
 
             for (let fruit of fruits.values()) {
-                ctx.fillStyle = fruit.color;
-                ctx.beginPath();
-                ctx.arc(fruit.x, fruit.y, fruit.radius, 0, 2 * Math.PI);
-                ctx.fill();
+                if (fruit.image.complete) {
+                    const transform = ctx.getTransform();
+                    ctx.translate(fruit.x, fruit.y);
+                    ctx.rotate(-fruit.angle);
+                    ctx.translate(-fruit.x, -fruit.y);
+                    ctx.drawImage(
+                        fruit.image,
+                        fruit.x - fruit.radius,
+                        fruit.y - fruit.radius,
+                        fruit.radius * 2,
+                        fruit.radius * 2
+                    );
+                    ctx.setTransform(transform);
+                }
             }
 
             ctx.fillStyle = currentfruit.color;
