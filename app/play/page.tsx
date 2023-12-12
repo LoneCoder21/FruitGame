@@ -201,7 +201,13 @@ export default function Game() {
     }, []);
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between bg-amber-100">
+        <main className="flex flex-row flex-wrap items-center justify-center bg-amber-100">
+            <div className="flex flex-col items-center mr-6">
+                <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">Score</h3>
+                <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-full text-right bg-gradient-to-t from-amber-700 to-amber-300 ">
+                    <h4 className="text-sm">140</h4>
+                </div>
+            </div>
             <canvas
                 ref={canvasref}
                 width={1000}

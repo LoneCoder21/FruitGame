@@ -17,8 +17,11 @@ const config: Config = {
             }
         },
         fontSize: {
+            xsm: "1.063rem",
             sm: "1.563rem",
+            smmed: "2.063rem",
             base: "2.352rem",
+            med: "3.052rem",
             xl: "4.052rem",
             mxl: "5.052rem"
         }
