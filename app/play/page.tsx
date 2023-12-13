@@ -212,19 +212,19 @@ export default function Game() {
     }, []);
 
     return (
-        <main className="flex flex-row flex-wrap items-center justify-center bg-amber-100">
+        <main className="flex flex-row flex-wrap items-center justify-center bg-[radial-gradient(circle,rgba(178,255,187,1)_0%,rgba(255,146,138,1)_100%)]">
             <div className="m-12 mt-0 mb-0">
                 <div className="flex flex-col items-center">
                     <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">
                         Score
                     </h3>
-                    <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-6/12 text-right bg-gradient-to-t from-amber-700 to-amber-300">
+                    <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-6/12 text-right bg-gradient-to-t from-red-700 to-red-300">
                         <h4 ref={score} className="text-sm">
                             0
                         </h4>
                     </div>
                 </div>
-                <div className="flex items-center justify-center rounded-full border-8 border-white p-8 m-5 from-amber-500 bg-gradient-to-tl via-white">
+                <div className="flex items-center justify-center rounded-full border-8 border-white p-8 m-5 from-red-500 bg-gradient-to-tl via-white">
                     <img
                         ref={nextimage}
                         src="/apple.png"
