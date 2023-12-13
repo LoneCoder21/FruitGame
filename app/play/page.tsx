@@ -46,11 +46,11 @@ export default function Game() {
             new Fruit(matter_width / 2, drop_ratio * matter_height, 25, "pink", "strawberry", 2),
             new Fruit(matter_width / 2, drop_ratio * matter_height, 30, "purple", "grape", 4),
             new Fruit(matter_width / 2, drop_ratio * matter_height, 35, "orange", "orange", 8),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "crimson", "apple", 16),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 45, "yellow", "pear", 64),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 55, "darkorange", "pineapple", 128),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 256),
-            new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 512)
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 40, "crimson", "apple", 12),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 45, "yellow", "pear", 20),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 55, "darkorange", "pineapple", 32),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 75),
+            new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 100)
         ];
         const maxfruitspawn = fruitTypes.length;
         let fruitIndex = new Map<string, number>([
@@ -112,6 +112,7 @@ export default function Game() {
                 let fruit1 = fruits.get(b.bodyA.id);
                 let fruit2 = fruits.get(b.bodyB.id);
                 if (fruit1 && fruit2 && fruit1.name === fruit2.name) {
+                    let fruitscore = fruit1.score + fruit2.score;
                     Matter.World.remove(engine.world, b.bodyA);
                     Matter.World.remove(engine.world, b.bodyB);
                     fruits.delete(b.bodyA.id);
@@ -130,9 +131,7 @@ export default function Game() {
                         matter_width - radius - wall_thick - x_space
                     );
                     nextfruit.setPosition(fruit_x, newposition.y);
-                    current_score += nextfruit.score;
-                    if (score.current) {
-                    }
+                    current_score += fruitscore;
                     score.current!.textContent = current_score.toString();
                 }
             });
