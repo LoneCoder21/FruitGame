@@ -8,6 +8,7 @@ import useEventListener from "../hooks/eventlistener";
 
 export default function Game() {
     const canvasref = useRef<HTMLCanvasElement>(null);
+    let score = useRef<HTMLHeadingElement>(null);
 
     useEventListener("resize", () => {
         const canvas = canvasref.current!;
@@ -130,6 +131,9 @@ export default function Game() {
                     );
                     nextfruit.setPosition(fruit_x, newposition.y);
                     current_score += nextfruit.score;
+                    if (score.current) {
+                    }
+                    score.current!.textContent = current_score.toString();
                 }
             });
         });
@@ -202,10 +206,19 @@ export default function Game() {
 
     return (
         <main className="flex flex-row flex-wrap items-center justify-center bg-amber-100">
-            <div className="flex flex-col items-center mr-6">
-                <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">Score</h3>
-                <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-full text-right bg-gradient-to-t from-amber-700 to-amber-300 ">
-                    <h4 className="text-sm">140</h4>
+            <div className="m-12 mt-0 mb-0">
+                <div className="flex flex-col items-center">
+                    <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">
+                        Score
+                    </h3>
+                    <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-6/12 text-right bg-gradient-to-t from-amber-700 to-amber-300">
+                        <h4 ref={score} className="text-sm">
+                            0
+                        </h4>
+                    </div>
+                </div>
+                <div>
+                    <img src="/fruits.png" width={300} alt="Evolution of the fruits" />
                 </div>
             </div>
             <canvas
