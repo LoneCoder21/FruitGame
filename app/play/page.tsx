@@ -127,18 +127,18 @@ export default function Game() {
                     fruits.delete(b.bodyB.id);
 
                     let newposition = Matter.Vector.div(Matter.Vector.add(b.bodyA.position, b.bodyB.position), 2);
-                    let nextfruitIndex = (fruitIndex.get(fruit1.name)! + 1) % fruitTypes.length;
-                    let nextfruit = fruitTypes[nextfruitIndex].clone();
+                    let mergefruitIndex = (fruitIndex.get(fruit1.name)! + 1) % fruitTypes.length;
+                    let mergefruit = fruitTypes[mergefruitIndex].clone();
 
-                    fruits.set(nextfruit.getBody().id, nextfruit);
-                    Matter.Composite.add(engine.world, [nextfruit.getBody()]);
-                    let radius = nextfruit.radius;
+                    fruits.set(mergefruit.getBody().id, mergefruit);
+                    Matter.Composite.add(engine.world, [mergefruit.getBody()]);
+                    let radius = mergefruit.radius;
                     let fruit_x = clamp(
                         newposition.x,
                         wall_thick + radius + x_space,
                         matter_width - radius - wall_thick - x_space
                     );
-                    nextfruit.setPosition(fruit_x, newposition.y);
+                    mergefruit.setPosition(fruit_x, newposition.y);
                     current_score += fruitscore;
                     score.current!.textContent = current_score.toString();
                 }
