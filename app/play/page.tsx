@@ -216,8 +216,11 @@ export default function Game() {
                         </h4>
                     </div>
                 </div>
-                <div>
-                    <img src="/fruits.png" width={300} alt="Evolution of the fruits" />
+                <div className="flex items-center justify-center rounded-full border-8 border-white p-8 m-5 from-amber-500 bg-gradient-to-tl via-white">
+                    <img src="/strawberry.png" width={120} alt="Evolution of the fruits" className="aspect-square" />
+                </div>
+                <div className="flex items-center justify-center">
+                    <img src="/fruits.png" width={180} alt="Evolution of the fruits" />
                 </div>
             </div>
             <canvas
