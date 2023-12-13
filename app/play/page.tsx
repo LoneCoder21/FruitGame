@@ -9,6 +9,7 @@ import useEventListener from "../hooks/eventlistener";
 export default function Game() {
     const canvasref = useRef<HTMLCanvasElement>(null);
     let score = useRef<HTMLHeadingElement>(null);
+    let nextimage = useRef<HTMLImageElement>(null);
 
     useEventListener("resize", () => {
         const canvas = canvasref.current!;
@@ -17,7 +18,7 @@ export default function Game() {
     });
 
     useEffect(() => {
-        if (!canvasref.current) return;
+        if (!canvasref.current || !nextimage.current || !score.current) return;
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
 
@@ -52,6 +53,7 @@ export default function Game() {
             new Fruit(matter_width / 2, drop_ratio * matter_height, 60, "lawngreen", "melon", 75),
             new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 100)
         ];
+
         const maxfruitspawn = fruitTypes.length;
         let fruitIndex = new Map<string, number>([
             ["cherry", 0],
@@ -65,8 +67,12 @@ export default function Game() {
             ["melon", 8],
             ["watermelon", 9]
         ]);
+
         let currentfruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
+        let nextfruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
         let spawnable = true;
+
+        nextimage.current.src = nextfruit.image.src;
 
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
@@ -97,10 +103,12 @@ export default function Game() {
 
             fruits.set(currentfruit.getBody().id, currentfruit);
             Matter.Composite.add(engine.world, [currentfruit.getBody()]);
-            currentfruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
+            currentfruit = nextfruit;
             let radius = currentfruit.radius;
             let fruit_x = clamp(matter_x, wall_thick + radius + x_space, matter_width - radius - wall_thick - x_space);
             currentfruit.setPosition(fruit_x, currentfruit.y);
+            nextfruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
+            nextimage.current!.src = nextfruit.image.src;
             spawnable = false;
             setTimeout(() => {
                 spawnable = true;
@@ -216,8 +224,11 @@ export default function Game() {
                         </h4>
                     </div>
                 </div>
-                <div>
-                    <img src="/fruits.png" width={300} alt="Evolution of the fruits" />
+                <div className="flex items-center justify-center rounded-full border-8 border-white p-8 m-5 from-amber-500 bg-gradient-to-tl via-white">
+                    <img ref={nextimage} src="/apple.png" width={120} alt="Evolution of the fruits" />
+                </div>
+                <div className="flex items-center justify-center">
+                    <img src="/fruits.png" width={180} alt="Evolution of the fruits" />
                 </div>
             </div>
             <canvas
