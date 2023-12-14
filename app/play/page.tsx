@@ -22,8 +22,6 @@ export default function Game() {
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
 
-        console.log("effect start");
-
         const matter_width = 480;
         const matter_height = 600;
         const wall_thick = 13;
@@ -111,7 +109,6 @@ export default function Game() {
             e.stopPropagation();
             const matter_x = (e.offsetX / canvas.width) * matter_width;
 
-            console.log("mousedown");
             fruits.set(currentfruit.getBody().id, currentfruit);
             Matter.Composite.add(engine.world, [currentfruit.getBody()]);
             currentfruit = nextfruit;
