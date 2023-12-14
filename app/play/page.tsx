@@ -26,7 +26,7 @@ export default function Game() {
 
         const matter_width = 480;
         const matter_height = 600;
-        const wall_thick = 10;
+        const wall_thick = 13;
         const place_highlight = 5;
         const drop_ratio = 0.1;
         const x_space = 2;
@@ -194,6 +194,11 @@ export default function Game() {
             }
 
             for (let fruit of fruits.values()) {
+                ctx.fillStyle = "white";
+                ctx.beginPath();
+                ctx.arc(fruit.x, fruit.y, fruit.radius, 0, 2 * Math.PI);
+                ctx.fill();
+
                 if (fruit.image.complete) {
                     const transform = ctx.getTransform();
                     ctx.translate(fruit.x, fruit.y);
