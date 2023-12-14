@@ -191,6 +191,11 @@ export default function Game() {
             }
 
             for (let fruit of fruits.values()) {
+                ctx.fillStyle = "white";
+                ctx.beginPath();
+                ctx.arc(fruit.x, fruit.y, fruit.radius, 0, 2 * Math.PI);
+                ctx.fill();
+
                 if (fruit.image.complete) {
                     const transform = ctx.getTransform();
                     ctx.translate(fruit.x, fruit.y);
