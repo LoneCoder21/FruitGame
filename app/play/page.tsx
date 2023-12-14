@@ -22,6 +22,8 @@ export default function Game() {
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
 
+        console.log("effect start");
+
         const matter_width = 480;
         const matter_height = 600;
         const wall_thick = 10;
@@ -54,7 +56,7 @@ export default function Game() {
             new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 100)
         ];
 
-        const maxfruitspawn = fruitTypes.length;
+        const maxfruitspawn = 4;
         let fruitIndex = new Map<string, number>([
             ["cherry", 0],
             ["strawberry", 1],
@@ -81,7 +83,13 @@ export default function Game() {
         let wallimage = new Image();
         wallimage.src = "wall.png";
 
-        canvas.addEventListener("mousemove", (e) => {
+        const bubbleaudio = document.createElement("audio");
+        bubbleaudio.src = "bubble.wav";
+
+        const popaudio = document.createElement("audio");
+        popaudio.src = "pop.wav";
+
+        function mousemove(e: MouseEvent) {
             const matter_x = (e.offsetX / canvas.width) * matter_width;
 
             const radius = currentfruit.radius;
@@ -93,14 +101,17 @@ export default function Game() {
             const fruit_y = drop_ratio * matter_height;
 
             currentfruit.setPosition(fruit_x, fruit_y);
-        });
+        }
 
-        canvas.addEventListener("mousedown", function (e) {
+        function mousedown(e: MouseEvent) {
+            e.stopPropagation();
             if ((e.buttons & 1) !== 1 || !spawnable) {
                 return;
             }
+            e.stopPropagation();
             const matter_x = (e.offsetX / canvas.width) * matter_width;
 
+            console.log("mousedown");
             fruits.set(currentfruit.getBody().id, currentfruit);
             Matter.Composite.add(engine.world, [currentfruit.getBody()]);
             currentfruit = nextfruit;
@@ -110,10 +121,18 @@ export default function Game() {
             nextfruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
             nextimage.current!.src = nextfruit.image.src;
             spawnable = false;
+
+            let cloneaudio = bubbleaudio.cloneNode(true) as HTMLAudioElement;
+            cloneaudio.volume = 0.2;
+            cloneaudio.play();
+
             setTimeout(() => {
                 spawnable = true;
             }, spawnwindow);
-        });
+        }
+
+        canvas.addEventListener("mousemove", mousemove);
+        canvas.addEventListener("mousedown", mousedown);
 
         Matter.Events.on(engine, "collisionStart", (e) => {
             e.pairs.forEach((b) => {
@@ -141,6 +160,10 @@ export default function Game() {
                     mergefruit.setPosition(fruit_x, newposition.y);
                     current_score += fruitscore;
                     score.current!.textContent = current_score.toString();
+
+                    let cloneaudio = popaudio.cloneNode(true) as HTMLAudioElement;
+                    cloneaudio.volume = 0.2;
+                    cloneaudio.play();
                 }
             });
         });
@@ -208,6 +231,8 @@ export default function Game() {
 
         return () => {
             cancelAnimationFrame(reqid);
+            removeEventListener("mousedown", mousedown);
+            removeEventListener("mousemove", mousemove);
         };
     }, []);
 
