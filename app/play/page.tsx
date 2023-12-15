@@ -36,6 +36,7 @@ export default function Game() {
     let [currentFruit, setcurrentFruit] = useState(fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone());
     let [nextFruit, setnextFruit] = useState(fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone());
     let [spawnable, setSpawnable] = useState(false);
+    let [paused, setPaused] = useState(false);
     let [canvasSize, setCanvasSize] = useState<RectangleSize>({ width: 1, height: 1 });
     let [mouseX, setMouseX] = useState(0);
     const [wallImage, setWallImage] = useState(new Image());
@@ -115,7 +116,7 @@ export default function Game() {
     }, [spawnable]);
 
     useEffect(() => {
-        if (gameover) return;
+        if (gameover || paused) return;
         function mousedown(e: MouseEvent) {
             if ((e.buttons & 1) !== 1 || !spawnable || !bubbleaudio.current) {
                 return;
@@ -146,7 +147,7 @@ export default function Game() {
     });
 
     useEffect(() => {
-        if (gameover || !canvasref.current) return;
+        if (gameover || !canvasref.current || paused) return;
         const canvas = canvasref.current;
         function mousemove(e: MouseEvent) {
             const matter_x = (e.offsetX / canvasSize.width) * matter_width;
@@ -169,7 +170,7 @@ export default function Game() {
     });
 
     useEffect(() => {
-        if (gameover) return;
+        if (gameover || paused) return;
         function collision(e: Matter.IEventCollision<Matter.Engine>) {
             e.pairs.forEach((b) => {
                 let fruit1 = fruits.get(b.bodyA.id);
@@ -218,7 +219,18 @@ export default function Game() {
     });
 
     useEffect(() => {
-        if (gameover || !canvasref.current) return;
+        if (gameover) return;
+        function visibilitychange() {
+            setPaused(document.hidden);
+        }
+        document.addEventListener("visibilitychange", visibilitychange);
+        return () => {
+            document.removeEventListener("visibilitychange", visibilitychange);
+        };
+    });
+
+    useEffect(() => {
+        if (gameover || !canvasref.current || paused) return;
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
 
