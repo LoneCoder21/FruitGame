@@ -149,7 +149,6 @@ export default function Game() {
         if (gameover || !canvasref.current) return;
         const canvas = canvasref.current;
         function mousemove(e: MouseEvent) {
-            console.log(e.offsetX);
             const matter_x = (e.offsetX / canvasSize.width) * matter_width;
 
             const radius = currentFruit.radius;
@@ -249,11 +248,6 @@ export default function Game() {
                 ctx.drawImage(wallImage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height);
 
             for (let fruit of fruits.values()) {
-                // ctx.fillStyle = "white";
-                // ctx.beginPath();
-                // ctx.arc(fruit.x, fruit.y, fruit.radius, 0, 2 * Math.PI);
-                // ctx.fill();
-
                 if (fruit.image.complete) {
                     const transform = ctx.getTransform();
                     ctx.translate(fruit.x, fruit.y);
