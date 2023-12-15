@@ -27,7 +27,6 @@ export default function Game() {
         new Fruit(matter_width / 2, drop_ratio * matter_height, 75, "green", "watermelon", 100)
     ];
 
-    const canvasref = useRef<HTMLCanvasElement>(null);
     let [score, setScore] = useState(0);
     let [nextImage, setNextImage] = useState<string | null>(null);
     let [gameover, setGameOver] = useState(false);
@@ -38,7 +37,6 @@ export default function Game() {
     let [spawnable, setSpawnable] = useState(false);
     let [paused, setPaused] = useState(false);
     let [canvasSize, setCanvasSize] = useState<RectangleSize>({ width: 1, height: 1 });
-    let [mouseX, setMouseX] = useState(0);
     const [wallImage, setWallImage] = useState(new Image());
     let [walls] = useState([
         new Wall(0, 0.2 * matter_height, wall_thick, matter_height),
@@ -47,6 +45,8 @@ export default function Game() {
         new Wall(0, matter_height - wall_thick, matter_width, wall_thick)
     ]);
 
+    const canvasref = useRef<HTMLCanvasElement>(null);
+    let mouseXRef = useRef(0);
     let bubbleaudio = useRef<HTMLAudioElement>(null);
     let popaudio = useRef<HTMLAudioElement>(null);
 
@@ -121,7 +121,7 @@ export default function Game() {
             if ((e.buttons & 1) !== 1 || !spawnable || !bubbleaudio.current) {
                 return;
             }
-            const matter_x = (mouseX / canvasSize.width) * matter_width;
+            const matter_x = (mouseXRef.current / canvasSize.width) * matter_width;
 
             fruits.set(currentFruit.getBody().id, currentFruit);
             Matter.Composite.add(engine.world, [currentFruit.getBody()]);
@@ -160,7 +160,7 @@ export default function Game() {
             );
             const fruit_y = drop_ratio * matter_height;
             currentFruit.setPosition(fruit_x, fruit_y);
-            setMouseX(e.offsetX);
+            mouseXRef.current = e.offsetX;
         }
 
         canvas.addEventListener("mousemove", mousemove);
