@@ -69,3 +69,8 @@ export class Wall {
         return this.body;
     }
 }
+
+export type RectangleSize = {
+    width: number;
+    height: number;
+};
