@@ -146,6 +146,8 @@ export default function Game() {
     });
 
     useEffect(() => {
+        if (gameover || !canvasref.current) return;
+        const canvas = canvasref.current;
         function mousemove(e: MouseEvent) {
             console.log(e.offsetX);
             const matter_x = (e.offsetX / canvasSize.width) * matter_width;
