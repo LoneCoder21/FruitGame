@@ -1,7 +1,7 @@
 "use client";
 
 import Matter from "matter-js";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, Dispatch } from "react";
 import { clamp } from "../utilities";
 import { Fruit, RectangleSize, Wall } from "./types";
 
@@ -31,7 +31,7 @@ export default function Game() {
     let [score, setScore] = useState(0);
     let [nextImage, setNextImage] = useState<string | null>(null);
     let [gameover, setGameOver] = useState(false);
-    let [engine] = useState(Matter.Engine.create({ gravity: { scale: 0.001 } }));
+    let [engine, setEngine] = useState(Matter.Engine.create({ gravity: { scale: 0.001 } }));
     let [fruits, setFruits] = useState(new Map<number, Fruit>());
     let [currentFruit, setcurrentFruit] = useState(fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone());
     let [nextFruit, setnextFruit] = useState(fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone());
@@ -60,6 +60,20 @@ export default function Game() {
         ["watermelon", 9]
     ]);
 
+    function resetGame() {
+        Matter.Engine.clear(engine);
+
+        setScore(0);
+        setNextImage(null);
+        setGameOver(false);
+        setEngine(Matter.Engine.create({ gravity: { scale: 0.001 } }));
+        setFruits(new Map<number, Fruit>());
+
+        setcurrentFruit(fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone());
+        setnextFruit(fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone());
+        setSpawnable(true);
+    }
+
     useEffect(() => {
         function resize() {
             if (!canvasref.current) return;
@@ -86,7 +100,7 @@ export default function Game() {
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
         });
-    }, [walls]);
+    }, [walls, nextFruit]);
 
     useEffect(() => {
         if (spawnable) return;
@@ -99,6 +113,7 @@ export default function Game() {
     }, [spawnable]);
 
     useEffect(() => {
+        if (gameover) return;
         function mousedown(e: MouseEvent) {
             if ((e.buttons & 1) !== 1 || !spawnable || !bubbleaudio.current) {
                 return;
@@ -129,6 +144,7 @@ export default function Game() {
     });
 
     useEffect(() => {
+        if (gameover) return;
         function mousemove(e: MouseEvent) {
             console.log(e.offsetX);
             const matter_x = (e.offsetX / canvasSize.width) * matter_width;
@@ -150,6 +166,7 @@ export default function Game() {
     });
 
     useEffect(() => {
+        if (gameover) return;
         function collision(e: Matter.IEventCollision<Matter.Engine>) {
             e.pairs.forEach((b) => {
                 let fruit1 = fruits.get(b.bodyA.id);
@@ -198,7 +215,7 @@ export default function Game() {
     });
 
     useEffect(() => {
-        if (!canvasref.current) return;
+        if (gameover || !canvasref.current) return;
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
 
@@ -228,10 +245,10 @@ export default function Game() {
                 ctx.drawImage(wallImage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height);
 
             for (let fruit of fruits.values()) {
-                ctx.fillStyle = "white";
-                ctx.beginPath();
-                ctx.arc(fruit.x, fruit.y, fruit.radius, 0, 2 * Math.PI);
-                ctx.fill();
+                // ctx.fillStyle = "white";
+                // ctx.beginPath();
+                // ctx.arc(fruit.x, fruit.y, fruit.radius, 0, 2 * Math.PI);
+                // ctx.fill();
 
                 if (fruit.image.complete) {
                     const transform = ctx.getTransform();
@@ -277,7 +294,7 @@ export default function Game() {
         <main className="flex flex-row flex-wrap items-center justify-center bg-[radial-gradient(circle,rgba(178,255,187,1)_0%,rgba(255,146,138,1)_100%)]">
             <audio ref={bubbleaudio} src="bubble.wav"></audio>
             <audio ref={popaudio} src="pop.wav"></audio>
-            {gameover && <GameOver score={3} />}
+            {gameover && <GameOver score={score} resetGame={resetGame} />}
             {!gameover && (
                 <div className="m-12 mt-0 mb-0">
                     <div className="flex flex-col items-center">
@@ -298,22 +315,22 @@ export default function Game() {
                     </div>
                 </div>
             )}
-            {!gameover && (
+            {
                 <canvas
                     ref={canvasref}
                     width={canvasSize.width}
                     height={canvasSize.height}
                     className="border-solid border-black  p-0 h-screen aspect-[4/5]"
                 ></canvas>
-            )}
+            }
         </main>
     );
 }
 
-function GameOver({ score }: { score: number }) {
+function GameOver({ score, resetGame }: { score: number; resetGame: Dispatch<void> }) {
     return (
-        <div className=" p-0 h-screen flex items-center justify-center flex-col">
-            <h1 className="text-xl text-center text-rose-500 text-stroke-2 text-stroke-green-400 font-extrabold sm:text-mxl">
+        <div className="p-0 h-screen flex items-center justify-center flex-col m-12 mt-0 mb-0">
+            <h1 className="text-xl text-center text-rose-500 text-stroke-2 text-stroke-green-400 font-extrabold sm:text-xl">
                 GameOver
             </h1>
             <div className="flex flex-row justify-center align-middle w-full">
@@ -324,7 +341,7 @@ function GameOver({ score }: { score: number }) {
             <button
                 className="text-base bg-amber-400 px-12 py-3 m-3 font-bold text-white rounded-full shadow-lg shadow-amber-600 hover:bg-amber-500 hover:scale-110 text-stroke-1 text-stroke-amber-800"
                 onClick={() => {
-                    window.location.reload();
+                    resetGame();
                 }}
             >
                 Play Again
