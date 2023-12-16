@@ -61,10 +61,9 @@ export default function Game() {
         ["orange", 3],
         ["apple", 4],
         ["pear", 5],
-        ["peach", 6],
-        ["pineapple", 7],
-        ["melon", 8],
-        ["watermelon", 9]
+        ["pineapple", 6],
+        ["melon", 7],
+        ["watermelon", 8]
     ]);
 
     function resetGame() {
