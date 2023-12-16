@@ -6,6 +6,7 @@ import { clamp } from "../utilities";
 import { Fruit, RectangleSize, Wall } from "./types";
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import { IconContext } from "react-icons";
+import Link from "next/link";
 
 export default function Game() {
     const matter_width = 480;
@@ -306,19 +307,16 @@ export default function Game() {
         >
             <audio ref={bubbleaudio} src="bubble.wav"></audio>
             <audio ref={popaudio} src="pop.wav"></audio>
-            <button
+            <SoundControl muted={muted} setMuted={setMuted} />
+            <Link
+                href="/help"
+                className="text-smmed bg-amber-400 px-4 py-1 m-3 font-bold text-white rounded-full shadow-lg shadow-amber-600 hover:bg-amber-500 hover:scale-110 text-stroke-1 text-stroke-amber-800 fixed bottom-0 left-0"
                 onClick={(e) => {
                     e.stopPropagation();
-                    setMuted(!muted);
                 }}
             >
-                <IconContext.Provider
-                    value={{ color: "black", size: "2em", className: "fixed left-0 top-0 m-4 hover:fill-white" }}
-                >
-                    {!muted && <FaVolumeUp />}
-                    {muted && <FaVolumeMute />}
-                </IconContext.Provider>
-            </button>
+                Help
+            </Link>
             {gameover && <GameOver score={score} resetGame={resetGame} />}
             {!gameover && (
                 <>
@@ -356,6 +354,28 @@ export default function Game() {
                 ></canvas>
             }
         </main>
+    );
+}
+
+function SoundControl({ muted, setMuted }: { muted: boolean; setMuted: Dispatch<boolean> }) {
+    return (
+        <button
+            onClick={(e) => {
+                e.stopPropagation();
+                setMuted(!muted);
+            }}
+        >
+            <IconContext.Provider
+                value={{
+                    color: "black",
+                    size: "2em",
+                    className: "fixed left-0 top-0 m-4 hover:fill-white"
+                }}
+            >
+                {!muted && <FaVolumeUp />}
+                {muted && <FaVolumeMute />}
+            </IconContext.Provider>
+        </button>
     );
 }
 
