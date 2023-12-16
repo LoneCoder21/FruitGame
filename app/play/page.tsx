@@ -4,6 +4,8 @@ import Matter from "matter-js";
 import { useRef, useEffect, useState, Dispatch } from "react";
 import { clamp } from "../utilities";
 import { Fruit, RectangleSize, Wall } from "./types";
+import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { IconContext } from "react-icons";
 
 export default function Game() {
     const matter_width = 480;
@@ -36,6 +38,7 @@ export default function Game() {
     let [nextFruit, setnextFruit] = useState(fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone());
     let [spawnable, setSpawnable] = useState(false);
     let [paused, setPaused] = useState(false);
+    let [muted, setMuted] = useState(false);
     let [canvasSize, setCanvasSize] = useState<RectangleSize>({ width: 1, height: 1 });
     const [wallImage, setWallImage] = useState(new Image());
     let [walls] = useState([
@@ -115,36 +118,32 @@ export default function Game() {
         };
     }, [spawnable]);
 
-    useEffect(() => {
-        if (gameover || paused) return;
-        function mousedown(e: MouseEvent) {
-            if ((e.buttons & 1) !== 1 || !spawnable || !bubbleaudio.current) {
-                return;
-            }
-            const matter_x = (mouseXRef.current / canvasSize.width) * matter_width;
-
-            fruits.set(currentFruit.getBody().id, currentFruit);
-            Matter.Composite.add(engine.world, [currentFruit.getBody()]);
-            currentFruit = nextFruit;
-            let radius = currentFruit.radius;
-            let fruit_x = clamp(matter_x, wall_thick + radius + x_space, matter_width - radius - wall_thick - x_space);
-            currentFruit.setPosition(fruit_x, currentFruit.y);
-            nextFruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
-            setNextImage(nextFruit.image.src);
-            setSpawnable(false);
-            setFruits(fruits);
-            setcurrentFruit(currentFruit);
-            setnextFruit(nextFruit);
-
-            let cloneaudio = bubbleaudio.current.cloneNode(true) as HTMLAudioElement;
-            cloneaudio.volume = 0.2;
-            cloneaudio.play();
+    const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!spawnable || gameover || paused) {
+            return;
         }
-        addEventListener("mousedown", mousedown);
-        return () => {
-            removeEventListener("mousedown", mousedown);
-        };
-    });
+        console.log("fdsa");
+        const matter_x = (mouseXRef.current / canvasSize.width) * matter_width;
+
+        fruits.set(currentFruit.getBody().id, currentFruit);
+        Matter.Composite.add(engine.world, [currentFruit.getBody()]);
+        currentFruit = nextFruit;
+        let radius = currentFruit.radius;
+        let fruit_x = clamp(matter_x, wall_thick + radius + x_space, matter_width - radius - wall_thick - x_space);
+        currentFruit.setPosition(fruit_x, currentFruit.y);
+        nextFruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
+        setNextImage(nextFruit.image.src);
+        setSpawnable(false);
+        setFruits(fruits);
+        setcurrentFruit(currentFruit);
+        setnextFruit(nextFruit);
+
+        if (!bubbleaudio.current || muted) return;
+
+        let cloneaudio = bubbleaudio.current.cloneNode(true) as HTMLAudioElement;
+        cloneaudio.volume = 0.2;
+        cloneaudio.play();
+    };
 
     useEffect(() => {
         if (gameover || !canvasref.current || paused) return;
@@ -203,7 +202,7 @@ export default function Game() {
                     setFruits(fruits);
                     setScore(score);
 
-                    if (!popaudio.current) return;
+                    if (!popaudio.current || muted) return;
 
                     let cloneaudio = popaudio.current.cloneNode(true) as HTMLAudioElement;
                     cloneaudio.volume = 0.2;
@@ -301,29 +300,50 @@ export default function Game() {
     });
 
     return (
-        <main className="flex flex-row flex-wrap items-center justify-center bg-[radial-gradient(circle,rgba(178,255,187,1)_0%,rgba(255,146,138,1)_100%)]">
+        <main
+            className="flex flex-row flex-wrap items-center justify-center bg-[radial-gradient(circle,rgba(178,255,187,1)_0%,rgba(255,146,138,1)_100%)]"
+            onClick={onClick}
+        >
             <audio ref={bubbleaudio} src="bubble.wav"></audio>
             <audio ref={popaudio} src="pop.wav"></audio>
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setMuted(!muted);
+                }}
+            >
+                <IconContext.Provider value={{ color: "black", size: "2em", className: "fixed left-0 top-0 m-4" }}>
+                    {!muted && <FaVolumeUp />}
+                    {muted && <FaVolumeMute />}
+                </IconContext.Provider>
+            </button>
             {gameover && <GameOver score={score} resetGame={resetGame} />}
             {!gameover && (
-                <div className="m-12 mt-0 mb-0">
-                    <div className="flex flex-col items-center">
-                        <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">
-                            Score
-                        </h3>
-                        <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-6/12 text-right bg-gradient-to-t from-red-700 to-red-300">
-                            <h4 className="text-sm">{score}</h4>
+                <>
+                    <div className="m-12 mt-0 mb-0">
+                        <div className="flex flex-col items-center">
+                            <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">
+                                Score
+                            </h3>
+                            <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-6/12 text-right bg-gradient-to-t from-red-700 to-red-300">
+                                <h4 className="text-sm">{score}</h4>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-center rounded-full border-8 border-white p-8 m-5 from-red-500 bg-gradient-to-tl via-white">
+                            {nextImage && (
+                                <img
+                                    src={nextImage}
+                                    width={120}
+                                    alt="The next fruit to come"
+                                    className="aspect-square"
+                                />
+                            )}
+                        </div>
+                        <div className="flex items-center justify-center">
+                            <img src="/fruits.png" width={180} alt="Evolution of the fruits" />
                         </div>
                     </div>
-                    <div className="flex items-center justify-center rounded-full border-8 border-white p-8 m-5 from-red-500 bg-gradient-to-tl via-white">
-                        {nextImage && (
-                            <img src={nextImage} width={120} alt="The next fruit to come" className="aspect-square" />
-                        )}
-                    </div>
-                    <div className="flex items-center justify-center">
-                        <img src="/fruits.png" width={180} alt="Evolution of the fruits" />
-                    </div>
-                </div>
+                </>
             )}
             {
                 <canvas
