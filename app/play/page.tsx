@@ -312,7 +312,9 @@ export default function Game() {
                     setMuted(!muted);
                 }}
             >
-                <IconContext.Provider value={{ color: "black", size: "2em", className: "fixed left-0 top-0 m-4" }}>
+                <IconContext.Provider
+                    value={{ color: "black", size: "2em", className: "fixed left-0 top-0 m-4 hover:fill-white" }}
+                >
                     {!muted && <FaVolumeUp />}
                     {muted && <FaVolumeMute />}
                 </IconContext.Provider>
