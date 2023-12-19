@@ -106,7 +106,6 @@ export default function Game() {
     }, [nextFruit]);
 
     useEffect(() => {
-        console.log("walls");
         wallImage.src = "wall.png";
         setWallImage(wallImage);
 
@@ -130,7 +129,6 @@ export default function Game() {
         if (!spawnable || gameover || paused) {
             return;
         }
-        console.log("e");
         const matter_x = (mouseXRef.current / canvasSize.width) * matter_width;
 
         fruits.set(currentFruit.getBody().id, currentFruit);
@@ -221,8 +219,6 @@ export default function Game() {
                     } else if (b.bodyB.label === "trigger" && fruit1) {
                         fruit1.deathtimer = performance.now();
                     }
-
-                    console.log("enter", b.bodyA, b.bodyB);
                 }
             });
         }
@@ -238,8 +234,6 @@ export default function Game() {
                     } else if (b.bodyB.label === "trigger" && fruit1) {
                         fruit1.deathtimer = null;
                     }
-
-                    console.log("exit", b.bodyA, b.bodyB);
                 }
             });
         }
@@ -265,7 +259,6 @@ export default function Game() {
 
     useEffect(() => {
         if (gameover || !canvasref.current || paused) return;
-        console.log("rerender", engine.world.bodies.length);
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
 
