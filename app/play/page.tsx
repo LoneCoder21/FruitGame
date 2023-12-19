@@ -15,7 +15,7 @@ export default function Game() {
     const place_highlight = 5;
     const drop_ratio = 0.1;
     const x_space = 2;
-    const spawnwindow = 1000;
+    const spawnwindow = 10;
     const maxfruitspawn = 4;
 
     let fruitTypes = [
@@ -48,6 +48,7 @@ export default function Game() {
 
         new Wall(0, matter_height - wall_thick, matter_width, wall_thick)
     ]);
+    let [triggerwall] = useState(new Wall(0, 0.2 * matter_height, matter_width, wall_thick, "trigger", true));
 
     const canvasref = useRef<HTMLCanvasElement>(null);
     let mouseXRef = useRef(0);
@@ -100,13 +101,19 @@ export default function Game() {
     });
 
     useEffect(() => {
+        setNextImage(nextFruit.image.src);
+    }, [nextFruit]);
+
+    useEffect(() => {
+        console.log("walls");
         wallImage.src = "wall.png";
         setWallImage(wallImage);
-        setNextImage(nextFruit.image.src);
+
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
         });
-    }, [walls, nextFruit]);
+        Matter.Composite.add(engine.world, [triggerwall.getBody()]);
+    }, [triggerwall, walls]);
 
     useEffect(() => {
         if (spawnable) return;
@@ -122,7 +129,7 @@ export default function Game() {
         if (!spawnable || gameover || paused) {
             return;
         }
-        console.log("fdsa");
+        console.log("e");
         const matter_x = (mouseXRef.current / canvasSize.width) * matter_width;
 
         fruits.set(currentFruit.getBody().id, currentFruit);
@@ -176,6 +183,7 @@ export default function Game() {
                 let fruit2 = fruits.get(b.bodyB.id);
 
                 if (fruit1 && fruit2 && fruit1.name === fruit2.name) {
+                    return;
                     let fruitscore = fruit1.score + fruit2.score;
 
                     Matter.World.remove(engine.world, b.bodyA);
@@ -207,6 +215,7 @@ export default function Game() {
                     let cloneaudio = popaudio.current.cloneNode(true) as HTMLAudioElement;
                     cloneaudio.volume = 0.2;
                     cloneaudio.play();
+                } else if (b.bodyA.label === "trigger" || b.bodyB.label === "trigger") {
                 }
             });
         }
@@ -230,6 +239,7 @@ export default function Game() {
 
     useEffect(() => {
         if (gameover || !canvasref.current || paused) return;
+        console.log("rerender", engine.world.bodies.length);
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
 
@@ -257,6 +267,9 @@ export default function Game() {
 
             wallImage.complete &&
                 ctx.drawImage(wallImage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height);
+
+            ctx.fillStyle = "black";
+            ctx.fillRect(triggerwall.x, triggerwall.y, triggerwall.width, triggerwall.height);
 
             for (let fruit of fruits.values()) {
                 if (fruit.image.complete) {

@@ -20,7 +20,7 @@ export class Fruit {
         this.score = score;
         this.image = new Image();
         this.image.src = `/${name}.png`;
-        this.body = Matter.Bodies.circle(x, y, radius, { restitution: 0.1, angularSpeed: 1.0 });
+        this.body = Matter.Bodies.circle(x, y, radius, { label: name, restitution: 0.1, angularSpeed: 1.0 });
         this.angle = this.body.angle;
     }
 
@@ -50,14 +50,20 @@ export class Wall {
     y: number;
     width: number;
     height: number;
+    name: string;
     body: Matter.Body;
 
-    constructor(x: number, y: number, width: number, height: number) {
+    constructor(x: number, y: number, width: number, height: number, name = "wall", isSensor = false) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.body = Matter.Bodies.rectangle(x + width / 2, y + height / 2, width, height, { isStatic: true });
+        this.name = name;
+        this.body = Matter.Bodies.rectangle(x + width / 2, y + height / 2, width, height, {
+            label: name,
+            isStatic: true,
+            isSensor
+        });
     }
 
     update() {
