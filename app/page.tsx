@@ -5,7 +5,7 @@ export default function Home() {
         <main className="flex min-h-screen flex-col bg-[url('/trianglify.png')]">
             <section className="flex flex-col items-center my-40">
                 <h1 className="text-xl text-center text-rose-500 text-stroke-2 text-stroke-green-400 font-extrabold sm:text-mxl">
-                    Watermelon Game
+                    Fruit Game
                 </h1>
                 <Link
                     href="/play"
