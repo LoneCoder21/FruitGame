@@ -10,6 +10,7 @@ export class Fruit {
     score: number;
     image: HTMLImageElement;
     body: Matter.Body;
+    deathtimer: number | null;
 
     constructor(x: number, y: number, radius: number, color: string, name: string, score: number) {
         this.x = x;
@@ -20,6 +21,7 @@ export class Fruit {
         this.score = score;
         this.image = new Image();
         this.image.src = `/${name}.png`;
+        this.deathtimer = null;
         this.body = Matter.Bodies.circle(x, y, radius, { label: name, restitution: 0.1, angularSpeed: 1.0 });
         this.angle = this.body.angle;
     }

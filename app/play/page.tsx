@@ -17,6 +17,7 @@ export default function Game() {
     const x_space = 2;
     const spawnwindow = 10;
     const maxfruitspawn = 4;
+    const maxDeathTime = 5000;
 
     let fruitTypes = [
         new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "red", "cherry", 1),
@@ -48,7 +49,7 @@ export default function Game() {
 
         new Wall(0, matter_height - wall_thick, matter_width, wall_thick)
     ]);
-    let [triggerwall] = useState(new Wall(0, 0.2 * matter_height, matter_width, wall_thick, "trigger", true));
+    let [triggerwall] = useState(new Wall(0, 0 * matter_height, matter_width, 0.35 * matter_height, "trigger", true));
 
     const canvasref = useRef<HTMLCanvasElement>(null);
     let mouseXRef = useRef(0);
@@ -177,13 +178,12 @@ export default function Game() {
 
     useEffect(() => {
         if (gameover || paused) return;
-        function collision(e: Matter.IEventCollision<Matter.Engine>) {
+        function collisionStart(e: Matter.IEventCollision<Matter.Engine>) {
             e.pairs.forEach((b) => {
                 let fruit1 = fruits.get(b.bodyA.id);
                 let fruit2 = fruits.get(b.bodyB.id);
 
                 if (fruit1 && fruit2 && fruit1.name === fruit2.name) {
-                    return;
                     let fruitscore = fruit1.score + fruit2.score;
 
                     Matter.World.remove(engine.world, b.bodyA);
@@ -216,13 +216,39 @@ export default function Game() {
                     cloneaudio.volume = 0.2;
                     cloneaudio.play();
                 } else if (b.bodyA.label === "trigger" || b.bodyB.label === "trigger") {
+                    if (b.bodyA.label === "trigger" && fruit2) {
+                        fruit2.deathtimer = performance.now();
+                    } else if (b.bodyB.label === "trigger" && fruit1) {
+                        fruit1.deathtimer = performance.now();
+                    }
+
+                    console.log("enter", b.bodyA, b.bodyB);
                 }
             });
         }
 
-        Matter.Events.on(engine, "collisionStart", collision);
+        function collisionEnd(e: Matter.IEventCollision<Matter.Engine>) {
+            e.pairs.forEach((b) => {
+                let fruit1 = fruits.get(b.bodyA.id);
+                let fruit2 = fruits.get(b.bodyB.id);
+
+                if (b.bodyA.label === "trigger" || b.bodyB.label === "trigger") {
+                    if (b.bodyA.label === "trigger" && fruit2) {
+                        fruit2.deathtimer = null;
+                    } else if (b.bodyB.label === "trigger" && fruit1) {
+                        fruit1.deathtimer = null;
+                    }
+
+                    console.log("exit", b.bodyA, b.bodyB);
+                }
+            });
+        }
+
+        Matter.Events.on(engine, "collisionStart", collisionStart);
+        Matter.Events.on(engine, "collisionEnd", collisionEnd);
         return () => {
-            Matter.Events.off(engine, "collisionStart", collision);
+            Matter.Events.off(engine, "collisionStart", collisionStart);
+            Matter.Events.off(engine, "collisionEnd", collisionEnd);
         };
     });
 
@@ -254,6 +280,9 @@ export default function Game() {
             // update physics
             for (let fruit of fruits.values()) {
                 fruit.update();
+                if (fruit.deathtimer && now - fruit.deathtimer >= maxDeathTime) {
+                    setGameOver(true);
+                }
             }
 
             ctx.reset();
@@ -267,9 +296,6 @@ export default function Game() {
 
             wallImage.complete &&
                 ctx.drawImage(wallImage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height);
-
-            ctx.fillStyle = "black";
-            ctx.fillRect(triggerwall.x, triggerwall.y, triggerwall.width, triggerwall.height);
 
             for (let fruit of fruits.values()) {
                 if (fruit.image.complete) {
