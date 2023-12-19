@@ -1,4 +1,5 @@
 import Matter from "matter-js";
+("use client");
 
 export class Fruit {
     x: number;
