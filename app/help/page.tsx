@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Help() {
     return (
-        <main className="flex min-h-screen flex-col items-center p-24 bg-[radial-gradient(circle,rgba(178,255,187,1)_0%,rgba(255,146,138,1)_100%)]">
+        <main className="flex min-h-screen flex-col items-center p-24 bg-[url('/trianglify.png')]">
             <div className="flex items-center justify-center">
                 <img src="/fruits.png" width={320} alt="Evolution of the fruits" />
             </div>

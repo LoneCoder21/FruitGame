@@ -15,7 +15,7 @@ export default function Game() {
     const place_highlight = 5;
     const drop_ratio = 0.1;
     const x_space = 2;
-    const spawnwindow = 10;
+    const spawnwindow = 1000;
     const maxfruitspawn = 4;
     const maxDeathTime = 5000;
 
@@ -333,7 +333,7 @@ export default function Game() {
 
     return (
         <main
-            className="flex flex-row flex-wrap items-center justify-center bg-[radial-gradient(circle,rgba(178,255,187,1)_0%,rgba(255,146,138,1)_100%)]"
+            className="flex flex-row flex-wrap items-center justify-center bg-[url('/trianglify.png')]"
             onClick={onClick}
         >
             <audio ref={bubbleaudio} src="bubble.wav"></audio>
