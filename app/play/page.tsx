@@ -257,7 +257,7 @@ export default function Game() {
             setPaused(document.hidden);
             if (!document.hidden) {
                 for (let fruit of fruits.values()) {
-                    fruit.deathtimer = performance.now();
+                    if (fruit.deathtimer) fruit.deathtimer = performance.now();
                 } // reset death timer if back to being visible
             }
         }
