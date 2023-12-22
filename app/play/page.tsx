@@ -113,7 +113,7 @@ export default function Game() {
             Matter.Composite.add(engine.world, [wall.getBody()]);
         });
         Matter.Composite.add(engine.world, [triggerwall.getBody()]);
-    }, [triggerwall, walls]);
+    }, [triggerwall, walls, engine.world, wallImage]);
 
     useEffect(() => {
         if (spawnable) return;
