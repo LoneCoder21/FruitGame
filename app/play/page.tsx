@@ -11,7 +11,8 @@ import Link from "next/link";
 export default function Game() {
     const matter_width = 480;
     const matter_height = 600;
-    const wall_thick = 13;
+    const wall_thick_x = 16;
+    const wall_thick_y = 12;
     const place_highlight = 5;
     const drop_ratio = 0.1;
     const x_space = 2;
@@ -44,10 +45,10 @@ export default function Game() {
     let [canvasSize, setCanvasSize] = useState<RectangleSize>({ width: 1, height: 1 });
     const [wallImage, setWallImage] = useState(new Image());
     let [walls] = useState([
-        new Wall(0, 0.2 * matter_height, wall_thick, matter_height),
-        new Wall(matter_width - wall_thick, 0.2 * matter_height, wall_thick, matter_height),
+        new Wall(0, 0.2 * matter_height, wall_thick_x, matter_height),
+        new Wall(matter_width - wall_thick_x, 0.2 * matter_height, wall_thick_x, matter_height),
 
-        new Wall(0, matter_height - wall_thick, matter_width, wall_thick)
+        new Wall(0, matter_height - wall_thick_y, matter_width, wall_thick_y)
     ]);
     let [triggerwall] = useState(new Wall(0, 0 * matter_height, matter_width, 0.35 * matter_height, "trigger", true));
 
@@ -135,7 +136,7 @@ export default function Game() {
         Matter.Composite.add(engine.world, [currentFruit.getBody()]);
         currentFruit = nextFruit;
         let radius = currentFruit.radius;
-        let fruit_x = clamp(matter_x, wall_thick + radius + x_space, matter_width - radius - wall_thick - x_space);
+        let fruit_x = clamp(matter_x, wall_thick_x + radius + x_space, matter_width - radius - wall_thick_x - x_space);
         currentFruit.setPosition(fruit_x, currentFruit.y);
         nextFruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
         setNextImage(nextFruit.image.src);
@@ -160,8 +161,8 @@ export default function Game() {
             const radius = currentFruit.radius;
             const fruit_x = clamp(
                 matter_x,
-                wall_thick + radius + x_space,
-                matter_width - radius - wall_thick - x_space
+                wall_thick_x + radius + x_space,
+                matter_width - radius - wall_thick_x - x_space
             );
             const fruit_y = drop_ratio * matter_height;
             currentFruit.setPosition(fruit_x, fruit_y);
@@ -199,8 +200,8 @@ export default function Game() {
                     let radius = mergefruit.radius;
                     let fruit_x = clamp(
                         newposition.x,
-                        wall_thick + radius + x_space,
-                        matter_width - radius - wall_thick - x_space
+                        wall_thick_x + radius + x_space,
+                        matter_width - radius - wall_thick_x - x_space
                     );
                     mergefruit.setPosition(fruit_x, newposition.y);
                     score += fruitscore;
