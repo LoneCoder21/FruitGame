@@ -12,7 +12,8 @@ export default function Game() {
     const matter_width = 480;
     const matter_height = 600;
     const wall_thick_x = 16;
-    const wall_thick_y = 12;
+    const wall_thick_y = 20;
+    const wall_thick_y_diff = 9;
     const place_highlight = 5;
     const drop_ratio = 0.1;
     const x_space = 2;
@@ -48,7 +49,7 @@ export default function Game() {
         new Wall(0, 0.2 * matter_height, wall_thick_x, matter_height),
         new Wall(matter_width - wall_thick_x, 0.2 * matter_height, wall_thick_x, matter_height),
 
-        new Wall(0, matter_height - wall_thick_y, matter_width, wall_thick_y)
+        new Wall(0, matter_height - wall_thick_y + wall_thick_y_diff, matter_width, wall_thick_y)
     ]);
     let [triggerwall] = useState(new Wall(0, 0 * matter_height, matter_width, 0.35 * matter_height, "trigger", true));
 
