@@ -183,6 +183,7 @@ export default function Game() {
                 let fruit2 = fruits.get(b.bodyB.id);
 
                 if (fruit1 && fruit2 && fruit1.name === fruit2.name) {
+                    //merge fruits
                     let fruitscore = fruit1.score + fruit2.score;
 
                     Matter.World.remove(engine.world, b.bodyA);
@@ -215,6 +216,7 @@ export default function Game() {
                     cloneaudio.volume = 0.2;
                     cloneaudio.play();
                 } else if (b.bodyA.label === "trigger" || b.bodyB.label === "trigger") {
+                    //enable death timer for trigger
                     if (b.bodyA.label === "trigger" && fruit2) {
                         fruit2.deathtimer = performance.now();
                     } else if (b.bodyB.label === "trigger" && fruit1) {
@@ -230,6 +232,7 @@ export default function Game() {
                 let fruit2 = fruits.get(b.bodyB.id);
 
                 if (b.bodyA.label === "trigger" || b.bodyB.label === "trigger") {
+                    //disable death timer for trigger
                     if (b.bodyA.label === "trigger" && fruit2) {
                         fruit2.deathtimer = null;
                     } else if (b.bodyB.label === "trigger" && fruit1) {
@@ -251,6 +254,11 @@ export default function Game() {
         if (gameover) return;
         function visibilitychange() {
             setPaused(document.hidden);
+            if (!document.hidden) {
+                for (let fruit of fruits.values()) {
+                    fruit.deathtimer = performance.now();
+                } // reset death timer if back to being visible
+            }
         }
         document.addEventListener("visibilitychange", visibilitychange);
         return () => {
@@ -288,13 +296,14 @@ export default function Game() {
             ctx.fillStyle = "white";
 
             spawnable &&
-                ctx.fillRect(currentFruit.x - place_highlight / 2, currentFruit.y, place_highlight, matter_height);
+                ctx.fillRect(currentFruit.x - place_highlight / 2, currentFruit.y, place_highlight, matter_height); // placeholder white rectangle
 
             wallImage.complete &&
-                ctx.drawImage(wallImage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height);
+                ctx.drawImage(wallImage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height); //image for the box/wall
 
             for (let fruit of fruits.values()) {
                 if (fruit.image.complete) {
+                    // rotate the image before drawing it
                     const transform = ctx.getTransform();
                     ctx.translate(fruit.x, fruit.y);
                     ctx.rotate(-fruit.angle);
@@ -311,6 +320,7 @@ export default function Game() {
             }
 
             if (currentFruit.image.complete && spawnable) {
+                //rotate fruit to place as well
                 const transform = ctx.getTransform();
                 ctx.translate(currentFruit.x, currentFruit.y);
                 ctx.rotate(-currentFruit.angle);
