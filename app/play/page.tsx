@@ -262,6 +262,8 @@ export default function Game() {
         if (gameover || !canvasref.current || paused) return;
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
 
         let reqid = window.requestAnimationFrame(draw);
         let lasttime = performance.now();
