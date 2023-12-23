@@ -44,7 +44,7 @@ export default function Game() {
     let [paused, setPaused] = useState(false);
     let [muted, setMuted] = useState(false);
     let [canvasSize, setCanvasSize] = useState<RectangleSize>({ width: 1, height: 1 });
-    const [wallImage, setWallImage] = useState(new Image());
+    const [wallImage, setWallImage] = useState<HTMLImageElement | null>(null);
     let [walls] = useState([
         new Wall(0, 0.2 * matter_height, wall_thick_x, matter_height),
         new Wall(matter_width - wall_thick_x, 0.2 * matter_height, wall_thick_x, matter_height),
@@ -104,12 +104,16 @@ export default function Game() {
     });
 
     useEffect(() => {
-        setNextImage(nextFruit.image.src);
+        if (nextFruit.image) setNextImage(nextFruit.image.src);
     }, [nextFruit]);
 
     useEffect(() => {
-        wallImage.src = "wall.png";
-        setWallImage(wallImage);
+        if (wallImage) {
+            return;
+        }
+        const wallimg = new Image();
+        wallimg.src = "wall.png";
+        setWallImage(wallimg);
 
         walls.forEach((wall) => {
             Matter.Composite.add(engine.world, [wall.getBody()]);
@@ -140,7 +144,8 @@ export default function Game() {
         let fruit_x = clamp(matter_x, wall_thick_x + radius + x_space, matter_width - radius - wall_thick_x - x_space);
         currentFruit.setPosition(fruit_x, currentFruit.y);
         nextFruit = fruitTypes[Math.floor(Math.random() * maxfruitspawn)].clone();
-        setNextImage(nextFruit.image.src);
+
+        if (nextFruit.image) setNextImage(nextFruit.image.src);
         setSpawnable(false);
         setFruits(fruits);
         setcurrentFruit(currentFruit);
@@ -269,6 +274,7 @@ export default function Game() {
 
     useEffect(() => {
         if (gameover || !canvasref.current || paused) return;
+        console.log("rerender");
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
         ctx.imageSmoothingEnabled = true;
@@ -305,11 +311,12 @@ export default function Game() {
             spawnable &&
                 ctx.fillRect(currentFruit.x - place_highlight / 2, currentFruit.y, place_highlight, matter_height); // placeholder white rectangle
 
-            wallImage.complete &&
+            wallImage &&
+                wallImage.complete &&
                 ctx.drawImage(wallImage, 0, 0.2 * matter_height, matter_width, (1.0 - 0.2) * matter_height); //image for the box/wall
 
             for (let fruit of fruits.values()) {
-                if (fruit.image.complete) {
+                if (fruit.image && fruit.image.complete) {
                     // rotate the image before drawing it
                     const transform = ctx.getTransform();
                     ctx.translate(fruit.x, fruit.y);
@@ -326,7 +333,7 @@ export default function Game() {
                 }
             }
 
-            if (currentFruit.image.complete && spawnable) {
+            if (currentFruit.image && currentFruit.image.complete && spawnable) {
                 //rotate fruit to place as well
                 const transform = ctx.getTransform();
                 ctx.translate(currentFruit.x, currentFruit.y);
