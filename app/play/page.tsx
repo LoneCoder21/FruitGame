@@ -17,7 +17,7 @@ export default function Game() {
     const place_highlight = 5;
     const drop_ratio = 0.1;
     const x_space = 2;
-    const spawnwindow = 1000;
+    const spawnwindow = 500;
     const maxfruitspawn = 4;
     const maxDeathTime = 5000;
 
