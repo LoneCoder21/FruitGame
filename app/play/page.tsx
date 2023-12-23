@@ -275,12 +275,18 @@ export default function Game() {
         ctx.imageSmoothingQuality = "high";
 
         let reqid = window.requestAnimationFrame(draw);
-        let lasttime = performance.now();
+        let lastTime = performance.now();
+
+        const tickms = 1000 / 80; // target is 80 fps
 
         function draw() {
             const now = performance.now();
-            const elapsed = now - lasttime;
-            lasttime = now;
+            const elapsed = now - lastTime;
+            if (elapsed < tickms) {
+                reqid = window.requestAnimationFrame(draw);
+                return;
+            }
+            lastTime = now;
 
             // update physics
             for (let fruit of fruits.values()) {
