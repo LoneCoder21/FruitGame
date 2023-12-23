@@ -1,10 +1,11 @@
 import Link from "next/link";
+import NextImage from "next/image";
 
 export default function Help() {
     return (
         <main className="flex min-h-screen flex-col items-center p-24 bg-[url('/trianglify.png')]">
             <div className="flex items-center justify-center">
-                <img src="/fruits.png" width={320} alt="Evolution of the fruits" />
+                <NextImage src="/fruits.png" width={320} height={320} alt="Evolution of the fruits" />
             </div>
             <h3 className="text-smmed text-center text-black text-stroke-1 text-stroke-green-400 font-extrabold m-4 w-8/12">
                 Your goal is to achieve the highest score possible by merging fruits. <br />

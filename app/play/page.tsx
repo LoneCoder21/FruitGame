@@ -7,6 +7,7 @@ import { Fruit, RectangleSize, Wall } from "./types";
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import { IconContext } from "react-icons";
 import Link from "next/link";
+import NextImage from "next/image";
 
 export default function Game() {
     const matter_width = 480;
@@ -398,7 +399,7 @@ export default function Game() {
                             )}
                         </div>
                         <div className="flex items-center justify-center">
-                            <img src="/fruits.png" width={180} alt="Evolution of the fruits" />
+                            <NextImage src="/fruits.png" width={180} height={180} alt="Evolution of the fruits" />
                         </div>
                     </div>
                 </>
