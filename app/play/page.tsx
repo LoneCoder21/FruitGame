@@ -21,6 +21,7 @@ export default function Game() {
     const spawnwindow = 500;
     const maxfruitspawn = 4;
     const maxDeathTime = 5000;
+    const canvas_aspect = 5 / 4;
 
     let fruitTypes = [
         new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "red", "cherry", 1),
@@ -89,9 +90,12 @@ export default function Game() {
         function resize() {
             if (!canvasref.current) return;
             const canvas = canvasref.current;
+            const width = Math.floor(Math.min(window.innerWidth, canvas.getBoundingClientRect().width));
+            const height = Math.floor(width * canvas_aspect);
+            console.log(canvas.getBoundingClientRect().width, window.innerWidth);
             const size: RectangleSize = {
-                width: Math.floor(canvas.getBoundingClientRect().width),
-                height: Math.floor(canvas.getBoundingClientRect().height)
+                width: width,
+                height: height
             };
             if (canvas.width != size.width || canvas.height != size.height) {
                 setCanvasSize(size);
@@ -361,7 +365,7 @@ export default function Game() {
 
     return (
         <main
-            className="flex flex-row flex-wrap items-center justify-center bg-[url('/trianglify.png')]"
+            className="flex flex-row flex-wrap items-center justify-center h-screen bg-[url('/trianglify.png')]"
             onClick={onClick}
         >
             <audio ref={bubbleaudio} src="bubble.wav"></audio>
@@ -369,7 +373,7 @@ export default function Game() {
             <SoundControl muted={muted} setMuted={setMuted} />
             <Link
                 href="/help"
-                className="text-smmed bg-amber-400 px-4 py-1 m-3 font-bold text-white rounded-full shadow-lg shadow-amber-600 hover:bg-amber-500 hover:scale-110 text-stroke-1 text-stroke-amber-800 fixed top-0 right-0"
+                className="text-sm bg-amber-400 px-4 py-1 m-3 font-bold text-white rounded-full shadow-lg shadow-amber-600 hover:bg-amber-500 hover:scale-110 text-stroke-1 text-stroke-amber-800 fixed top-0 right-0"
                 onClick={(e) => {
                     e.stopPropagation();
                 }}
@@ -378,11 +382,8 @@ export default function Game() {
             </Link>
             {gameover && <GameOver score={score} resetGame={resetGame} />}
             {!gameover && (
-                <div className="flex flex-col basis-1/6 m-4 mt-0 mb-0 h-screen items-center justify-center">
+                <div className="flex flex-row md:flex-col md:basis-1/6 m-4 mt-12 mb-0 items-center justify-center">
                     <div className="flex flex-col items-center justify-center w-1/2">
-                        <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">
-                            Score
-                        </h3>
                         <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-9/12 text-right bg-gradient-to-t from-red-700 to-red-300">
                             <h4 className="text-sm">{score}</h4>
                         </div>
@@ -407,7 +408,7 @@ export default function Game() {
                     ref={canvasref}
                     width={canvasSize.width}
                     height={canvasSize.height}
-                    className="border-solid border-black  p-0 h-screen aspect-[4/5]"
+                    className="self-end border-solid border-black p-0 px-1 w-full md:w-auto aspect-[4/5] md:h-screen"
                 ></canvas>
             }
         </main>

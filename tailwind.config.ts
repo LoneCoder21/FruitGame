@@ -16,7 +16,7 @@ const config: Config = {
                 "liquid-cheese": "url('/liquid-cheese.png')"
             },
             aspectRatio: {
-                "4/5": "4 / 5"
+                "4/5": "4/5"
             }
         },
         fontSize: {
