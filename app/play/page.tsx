@@ -378,31 +378,29 @@ export default function Game() {
             </Link>
             {gameover && <GameOver score={score} resetGame={resetGame} />}
             {!gameover && (
-                <>
-                    <div className="m-12 mt-0 mb-0">
-                        <div className="flex flex-col items-center">
-                            <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">
-                                Score
-                            </h3>
-                            <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-6/12 text-right bg-gradient-to-t from-red-700 to-red-300">
-                                <h4 className="text-sm">{score}</h4>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-center rounded-full border-8 border-white p-8 m-5 from-red-500 bg-gradient-to-tl via-white">
-                            {nextImage && (
-                                <img
-                                    src={nextImage}
-                                    width={120}
-                                    alt="The next fruit to come"
-                                    className="aspect-square"
-                                />
-                            )}
-                        </div>
-                        <div className="flex items-center justify-center">
-                            <NextImage src="/fruits.png" width={180} height={180} alt="Evolution of the fruits" />
+                <div className="flex flex-col basis-1/6 m-4 mt-0 mb-0 h-screen items-center justify-center">
+                    <div className="flex flex-col items-center justify-center w-1/2">
+                        <h3 className="text-center text-stroke-black text-stroke-1 text-white text-base font-bold">
+                            Score
+                        </h3>
+                        <div className="p-1 m-1 mt-0 font-extrabold text-white rounded-lg w-9/12 text-right bg-gradient-to-t from-red-700 to-red-300">
+                            <h4 className="text-sm">{score}</h4>
                         </div>
                     </div>
-                </>
+                    <div className="flex items-center justify-center rounded-full border-4 border-white from-red-500 bg-gradient-to-tl via-white w-1/2 m-4">
+                        {nextImage && <img src={nextImage} alt="The next fruit to come" className="p-4" />}
+                    </div>
+                    <div className="flex items-center justify-center w-1/2">
+                        <NextImage
+                            src="/fruits.png"
+                            width={0}
+                            height={0}
+                            sizes="100vw"
+                            className="w-full h-auto"
+                            alt="Evolution of the fruits"
+                        />
+                    </div>
+                </div>
             )}
             {
                 <canvas
