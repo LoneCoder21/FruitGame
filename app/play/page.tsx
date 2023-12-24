@@ -166,8 +166,9 @@ export default function Game() {
     useEffect(() => {
         if (gameover || !canvasref.current || paused) return;
         const canvas = canvasref.current;
-        function mousemove(e: MouseEvent) {
-            const matter_x = (e.offsetX / canvasSize.width) * matter_width;
+
+        function moveEvent(x: number, y: number) {
+            const matter_x = (x / canvasSize.width) * matter_width;
 
             const radius = currentFruit.radius;
             const fruit_x = clamp(
@@ -177,12 +178,26 @@ export default function Game() {
             );
             const fruit_y = drop_ratio * matter_height;
             currentFruit.setPosition(fruit_x, fruit_y);
-            mouseXRef.current = e.offsetX;
+            mouseXRef.current = x;
+        }
+
+        function mousemove(e: MouseEvent) {
+            moveEvent(e.offsetX, e.offsetY);
+        }
+
+        function touchmove(e: TouchEvent) {
+            var bcr = canvas.getBoundingClientRect();
+            var x = e.targetTouches[0].clientX - bcr.x;
+            var y = e.targetTouches[0].clientY - bcr.y;
+            moveEvent(x, y);
         }
 
         canvas.addEventListener("mousemove", mousemove);
+        canvas.addEventListener("touchmove", touchmove);
+
         return () => {
             canvas.removeEventListener("mousemove", mousemove);
+            canvas.removeEventListener("touchmove", touchmove);
         };
     });
 
