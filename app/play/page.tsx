@@ -369,7 +369,7 @@ export default function Game() {
             <SoundControl muted={muted} setMuted={setMuted} />
             <Link
                 href="/help"
-                className="text-smmed bg-amber-400 px-4 py-1 m-3 font-bold text-white rounded-full shadow-lg shadow-amber-600 hover:bg-amber-500 hover:scale-110 text-stroke-1 text-stroke-amber-800 fixed bottom-0 left-0"
+                className="text-smmed bg-amber-400 px-4 py-1 m-3 font-bold text-white rounded-full shadow-lg shadow-amber-600 hover:bg-amber-500 hover:scale-110 text-stroke-1 text-stroke-amber-800 fixed top-0 right-0"
                 onClick={(e) => {
                     e.stopPropagation();
                 }}
