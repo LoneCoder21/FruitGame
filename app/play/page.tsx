@@ -21,7 +21,6 @@ export default function Game() {
     const spawnwindow = 500;
     const maxfruitspawn = 4;
     const maxDeathTime = 5000;
-    const canvas_aspect = 5 / 4;
 
     let fruitTypes = [
         new Fruit(matter_width / 2, drop_ratio * matter_height, 20, "red", "cherry", 1),
@@ -90,12 +89,9 @@ export default function Game() {
         function resize() {
             if (!canvasref.current) return;
             const canvas = canvasref.current;
-            const width = Math.floor(Math.min(window.innerWidth, canvas.getBoundingClientRect().width));
-            const height = Math.floor(width * canvas_aspect);
-            console.log(canvas.getBoundingClientRect().width, window.innerWidth);
             const size: RectangleSize = {
-                width: width,
-                height: height
+                width: Math.floor(canvas.getBoundingClientRect().width),
+                height: Math.floor(canvas.getBoundingClientRect().height)
             };
             if (canvas.width != size.width || canvas.height != size.height) {
                 setCanvasSize(size);
@@ -294,7 +290,6 @@ export default function Game() {
 
     useEffect(() => {
         if (gameover || !canvasref.current || paused) return;
-        console.log("rerender");
         const canvas = canvasref.current;
         const ctx = canvas.getContext("2d")!;
         ctx.imageSmoothingEnabled = true;
